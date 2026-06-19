@@ -52,14 +52,28 @@ const createTicket = async (data) => {
     };
 
     const response = await ticketRepository.create(ticketData);
-    const mailResponse = await sendMail(
-      ServerConfig.GMAIL_EMAIL,
-      recipientEmail,
-      ticketData.subject,
-      ticketData.content
-    );
-    LoggerConfig.info('Successfully sent data to recipient');
-    return { ticket: response, mailResponse };
+    try {
+      const mailResponse = await sendMail(
+        ServerConfig.GMAIL_EMAIL,
+        recipientEmail,
+        ticketData.subject,
+        ticketData.content
+      );
+      await ticketRepository.update(response.id, { status: SUCCESSS });
+      LoggerConfig.info(
+        'Successfully sent data to recipient and updated ticket status'
+      );
+      return { ticket: response, mailResponse };
+    } catch (sendError) {
+      await ticketRepository.update(response.id, { status: FAILED });
+      LoggerConfig.error(
+        'Failed to send email, ticket status updated to FAILED'
+      );
+      if (sendError instanceof ErrorHandler) {
+        throw sendError;
+      }
+      throw sendError;
+    }
   } catch (error) {
     if (error instanceof ErrorHandler) {
       throw error;

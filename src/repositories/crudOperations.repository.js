@@ -66,6 +66,36 @@ class CrudRepository {
       );
     }
   }
+  async update(modelId, data) {
+    try {
+      const [updatedCount] = await this.model.update(data, {
+        where: {
+          id: modelId,
+        },
+      });
+      if (!updatedCount) {
+        LoggerConfig.error(`Not able to update the data with id ${modelId}`);
+        throw new ErrorHandler(
+          `Not able to update the data with id ${modelId}`,
+          StatusCodes.BAD_REQUEST
+        );
+      }
+      LoggerConfig.info(`Successfully updated the data with id ${modelId}`);
+      return this.get(modelId);
+    } catch (error) {
+      LoggerConfig.error(
+        `Error occured while updating the data with id ${modelId} ERROR:${error}`
+      );
+      if (error instanceof ErrorHandler) {
+        throw error;
+      }
+      throw new ErrorHandler(
+        `Error occured while updating the data with id ${modelId} ERROR:${error}`,
+        StatusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   async getAll() {
     try {
       const response = await this.model.findAll();
