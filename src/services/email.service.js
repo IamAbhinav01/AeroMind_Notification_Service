@@ -26,9 +26,12 @@ const sendMail = async (from, to, subject, text) => {
     if (error instanceof ErrorHandler) {
       throw error;
     }
-    LoggerConfig.error('error while sending  the user the email');
+    LoggerConfig.error(
+      `error while sending the user the email: ${error.message}`,
+      error.stack || error
+    );
     throw new ErrorHandler(
-      'Error occured while sending  the user the email',
+      `Error occured while sending the user the email: ${error.message}`,
       StatusCodes.BAD_REQUEST
     );
   }

@@ -21,7 +21,17 @@ const connectRabitMQ = async () => {
     channel.consume('aeromind-notifications', async (data) => {
       try {
         const obj = JSON.parse(data.content.toString());
-        await sendMail(GMAIL_EMAIL, obj.recipientEmail, obj.subject, obj.text);
+        const recipientEmail = obj.recipientEmail || obj.recepientEmail;
+
+        if (!recipientEmail) {
+          LoggerConfig.error(
+            `RabbitMQ message missing recipientEmail: ${JSON.stringify(obj)}`
+          );
+          channel.nack(data, false, false);
+          return;
+        }
+
+        await sendMail(GMAIL_EMAIL, recipientEmail, obj.subject, obj.text);
         channel.ack(data);
       } catch (consumerError) {
         LoggerConfig.error(
