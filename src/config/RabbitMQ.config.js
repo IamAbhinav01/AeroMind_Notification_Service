@@ -31,7 +31,7 @@ const connectRabitMQ = async () => {
           return;
         }
 
-        await sendMail(GMAIL_EMAIL, recipientEmail, obj.subject, obj.text);
+        await sendMail(GMAIL_EMAIL, recipientEmail, obj.subject, obj.text, obj.html);
         channel.ack(data);
       } catch (consumerError) {
         LoggerConfig.error(

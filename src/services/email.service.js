@@ -12,14 +12,20 @@ const { TicketRepository } = require('../repositories');
 
 const ticketRepository = new TicketRepository();
 
-const sendMail = async (from, to, subject, text) => {
+const sendMail = async (from, to, subject, text, html) => {
   try {
-    const response = await NodeMailer.sendMail({
+    const mailOptions = {
       from: from,
       to: to,
       subject: subject,
       text: text,
-    });
+    };
+
+    if (html) {
+      mailOptions.html = html;
+    }
+
+    const response = await NodeMailer.sendMail(mailOptions);
     console.log('Email send response : ', response);
     return response;
   } catch (error) {
@@ -62,7 +68,8 @@ const createTicket = async (data) => {
         ServerConfig.GMAIL_EMAIL,
         recipientEmail,
         ticketData.subject,
-        ticketData.content
+        ticketData.content,
+        ticketData.html
       );
       await ticketRepository.update(response.id, { status: SUCCESSS });
       LoggerConfig.info(
