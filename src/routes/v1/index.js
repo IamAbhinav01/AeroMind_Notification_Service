@@ -9,5 +9,6 @@ const router = express.Router();
 
 router.use('/healthy', healthController.health);
 router.post('/tickets', emailController.createTickets);
+router.get('/tickets/pending', emailController.getPendingTickets);
 
 module.exports = router;

@@ -10,7 +10,7 @@ class TicketRepository extends CrudRepository {
   async getPendingTickets() {
     const response = await Ticket.findAll({
       where: {
-        statusbar: PENDING,
+        status: PENDING,
       },
     });
     return response;
