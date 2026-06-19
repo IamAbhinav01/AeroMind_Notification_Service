@@ -1,5 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
-const { LoggerConfig, NodeMailer, ServerConfig } = require('../config');
+const LoggerConfig = require('../config/logger.config');
+const NodeMailer = require('../config/mailer.config');
+const ServerConfig = require('../config/server.config');
 const { ErrorHandler } = require('../errors');
 const {
   SUCCESSS,

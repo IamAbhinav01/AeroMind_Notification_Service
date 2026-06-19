@@ -1,5 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
-const { LoggerConfig } = require('../config/');
+const LoggerConfig = require('../config/logger.config');
 const { ErrorHandler } = require('../errors');
 
 class CrudRepository {
