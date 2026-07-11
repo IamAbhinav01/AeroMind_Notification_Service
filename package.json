@@ -1,5 +1,5 @@
 {
-  "name": "aeromind_api_gateway_service",
+  "name": "aeromind_notification_service",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -8,6 +8,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
     "dev": "npx nodemon src/index.js"
   },
   "dependencies": {
