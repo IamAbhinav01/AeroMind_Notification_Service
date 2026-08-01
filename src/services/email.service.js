@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const LoggerConfig = require('../config/logger.config');
-const NodeMailer = require('../config/mailer.config');
 const ServerConfig = require('../config/server.config');
+const { Resend } = require('resend');
 const { ErrorHandler } = require('../errors');
 const {
   SUCCESSS,
@@ -10,24 +10,39 @@ const {
 } = require('../utils/common/ticket-constants');
 const { TicketRepository } = require('../repositories');
 
+const resend = new Resend(ServerConfig.RESEND_API_KEY || process.env.RESEND_API_KEY);
 const ticketRepository = new TicketRepository();
 
 const sendMail = async (from, to, subject, text, html) => {
   try {
-    const mailOptions = {
+    const payload = {
       from: from,
-      to: to,
-      subject: subject,
-      text: text,
+      to: Array.isArray(to) ? to : [to],
+      subject: subject || 'Hello World',
     };
 
     if (html) {
-      mailOptions.html = html;
+      payload.html = html;
+    } else if (text) {
+      payload.text = text;
+    } else {
+      payload.html = '<strong>It works!</strong>';
     }
 
-    const response = await NodeMailer.sendMail(mailOptions);
-    console.log('Email send response : ', response);
-    return response;
+    const { data, error } = await resend.emails.send(payload);
+
+    if (error) {
+      console.error({ error });
+      LoggerConfig.error(`Resend error: ${JSON.stringify(error)}`);
+      throw new ErrorHandler(
+        `Error sending email: ${error.message || JSON.stringify(error)}`,
+        StatusCodes.BAD_REQUEST
+      );
+    }
+
+    console.log({ data });
+    LoggerConfig.info(`Email sent successfully via Resend: ${JSON.stringify(data)}`);
+    return data;
   } catch (error) {
     if (error instanceof ErrorHandler) {
       throw error;

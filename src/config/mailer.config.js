@@ -1,5 +1,8 @@
 const nodemailer = require('nodemailer');
-const { GMAIL_EMAIL, GMAIL_PASS } = require('./server.config');
+const { GMAIL_EMAIL, GMAIL_PASS, RESEND_API_KEY } = require('./server.config');
+const { Resend } = require('resend');
+
+const resendMailer = new Resend(RESEND_API_KEY);
 
 const mailsender = nodemailer.createTransport({
   service: 'Gmail',
@@ -9,4 +12,4 @@ const mailsender = nodemailer.createTransport({
   },
 });
 
-module.exports = mailsender;
+module.exports = { mailsender, resendMailer };
